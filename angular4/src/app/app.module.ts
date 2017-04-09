@@ -14,7 +14,6 @@ declare var require: any;
 
 const Highcharts = require('highcharts/highstock');
 
-
 @NgModule({
   declarations: [
     AppComponent,

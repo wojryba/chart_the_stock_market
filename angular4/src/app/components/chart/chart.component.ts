@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy  } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 
+
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
@@ -11,7 +12,7 @@ export class ChartComponent implements OnInit, OnDestroy  {
   chart: any;
   symbol: any;
   hidden = true;
-  stocks: Array<object> = [];
+  stocks: any = [];
   connection: any;
 
   constructor(private api: ApiService) {
@@ -27,9 +28,6 @@ export class ChartComponent implements OnInit, OnDestroy  {
       symbol: ''
     };
 
-    // get current stocks
-    this.getStocks();
-
     // socket observable
     this.connection = this.api.getStocks().subscribe( data => {
       this.addOrRemoveStock(data);
@@ -44,6 +42,10 @@ export class ChartComponent implements OnInit, OnDestroy  {
   removeStock(val, j) {
     // send socket massage
     this.api.removeStocks(val, j);
+
+    this.api.deleteStock(val).subscribe(
+      response => console.log(response)
+    );
   }
 
   addOrRemoveStock(data) {
@@ -54,7 +56,6 @@ export class ChartComponent implements OnInit, OnDestroy  {
         data: data.data.dataset.data,
       };
       this.chart.addSeries(stockData);
-
       // add the stock to pakge
       const stock = {
         symbol: data.data.dataset['dataset_code'],
@@ -77,39 +78,49 @@ export class ChartComponent implements OnInit, OnDestroy  {
 
   saveInstance(chartInstance) {
     this.chart = chartInstance;
+    // get initial stocks from backend
+    this.api.getInitialStocks().subscribe(
+      response => {
+        let f = JSON.parse(response['_body']);
+        // map the recived data and insert into chart and view
+        f.data.map( val => {
+          const stockData = {
+            name: val.dataset['dataset_code'],
+            data: val.dataset.data,
+          };
+          this.chart.addSeries(stockData);
+
+          const stock = {
+            symbol: val.dataset['dataset_code'],
+            name: val.dataset.name
+          };
+          this.stocks.push(stock);
+        })
+      }
+    )
+
+
   }
 
   onSubmit(value) {
     this.api.fetchStock(value).subscribe(
       response => {
-        const data = JSON.parse(response['_body']);
-        if (data.quandl_error) {
-          // show massage about wrong stock symbol
-          this.hidden = false;
+        if(response['_body'] == 'Already added') {
+          console.log('Already added');
         } else {
-          // hide massage about wrong stock symbol
-          this.hidden = true;
+          const data = JSON.parse(response['_body']);
+          if (data.quandl_error) {
+            // show massage about wrong stock symbol
+            this.hidden = false;
+          } else {
+            // hide massage about wrong stock symbol
+            this.hidden = true;
 
-          // make socket call to add the stock;
-          this.api.sendStocks(data);
+            // make socket call to add the stock;
+            this.api.sendStocks(data);
+          }
         }
       },
-      error => console.log(error),
-      () => console.log('complete')
-    );
-  }
-
-  getStocks() {
-    this.api.getInitialStocks().subscribe(
-      response => console.log(response),
-      error => console.log(error),
-      () => console.log('complete')
-    );
-  }
-
-  saveStocks(chart, stocks) {
-    this.api.saveStocks(chart, stocks).subscribe(
-      response => console.log(response),
       error => console.log(error),
       () => console.log('complete')
     );

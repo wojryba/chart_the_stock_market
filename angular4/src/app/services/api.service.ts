@@ -43,15 +43,16 @@ export class ApiService {
   }
 
   getInitialStocks() {
-    return this.http.get('/');
+    return this.http.get('http://localhost:5000/get')
   }
 
-  saveStocks(chart, stocks){
-    const encoded_data = JSON.stringify({ chart, stocks });
-    const headers = new Headers({ 'Content-Type': 'application/json;charset=utf-8'});
-    const options = new RequestOptions({ headers: headers });
+  deleteStock(val) {
+    let encoded_data = JSON.stringify({ val })
+    let headers = new Headers ({'Content-Type': 'application/json;charset=utf-8'});
+    let options = new RequestOptions ({headers: headers });
 
-    return this.http.post('http://localhost:5000/save', encoded_data, options);
+    return this.http.post('http://localhost:5000/remove', encoded_data, options);
   }
+
 
 }

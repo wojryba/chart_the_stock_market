@@ -5,6 +5,10 @@ const request = require('request');
 const path = require('path');
 require('dotenv').config();
 
+if (typeof localStorage === "undefined" || localStorage === null) {
+  var LocalStorage = require('node-localstorage').LocalStorage;
+  localStorage = new LocalStorage('./scratch');
+}
 
 const port = process.env.PORT || 3000;
 
@@ -29,8 +33,25 @@ app.post('/stock', (req, res) => {
       val[0] = new Date(val[0]).getTime();
     })
 
+    let f = JSON.parse(localStorage.getItem('initialStocks'));
+    if (!f){
+      f = {
+        data: [stockData]
+      }
+    } else {
 
-    return res.send(stockData);
+      let d = f.data.filter(val => {
+        return val.dataset['dataset_code'] === stockData.dataset['dataset_code']
+      })
+      if (d.length == 0) {
+        f.data.push(stockData);
+        localStorage.setItem('initialStocks', JSON.stringify(f));
+        return res.send(stockData);
+      } else {
+        console.log(d)
+        return res.send("Already added")
+      }
+    }
   })
 })
 
@@ -48,8 +69,23 @@ app.get('/', (req, res) => {
   })
 })
 
-app.post('/save', (req, res) => {
-  console.log(req.body);
+app.get('/get', (req, res) => {
+  let f = JSON.parse(localStorage.getItem('initialStocks'));
+  res.send(f);
+})
+
+app.post('/remove', (req, res) => {
+  let id = req.body.val;
+  let f = JSON.parse(localStorage.getItem('initialStocks'));
+  console.log(f);
+  function remove(val) {
+    if(val.dataset['dataset_code'] != id){
+      return val
+    };
+  }
+  f.data = f.data.filter(remove);
+  localStorage.setItem('initialStocks', JSON.stringify(f));
+  res.send("done");
 })
 
 const http = require('http').Server(app);
