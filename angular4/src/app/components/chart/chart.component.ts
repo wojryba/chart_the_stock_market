@@ -31,7 +31,7 @@ export class ChartComponent implements OnInit, OnDestroy  {
     // socket observable
     this.connection = this.api.getStocks().subscribe( data => {
       this.addOrRemoveStock(data);
-   })
+   });
   }
 
   ngOnDestroy() {
@@ -49,7 +49,7 @@ export class ChartComponent implements OnInit, OnDestroy  {
   }
 
   addOrRemoveStock(data) {
-    if (data.type === "new-stock") {
+    if (data.type === 'new-stock') {
       // add the stock to chart
       const stockData = {
         name: data.data.dataset['dataset_code'],
@@ -81,7 +81,7 @@ export class ChartComponent implements OnInit, OnDestroy  {
     // get initial stocks from backend
     this.api.getInitialStocks().subscribe(
       response => {
-        let f = JSON.parse(response['_body']);
+        const f = JSON.parse(response['_body']);
         // map the recived data and insert into chart and view
         f.data.map( val => {
           const stockData = {
@@ -95,9 +95,9 @@ export class ChartComponent implements OnInit, OnDestroy  {
             name: val.dataset.name
           };
           this.stocks.push(stock);
-        })
+        });
       }
-    )
+    );
 
 
   }
@@ -105,7 +105,7 @@ export class ChartComponent implements OnInit, OnDestroy  {
   onSubmit(value) {
     this.api.fetchStock(value).subscribe(
       response => {
-        if(response['_body'] == 'Already added') {
+        if (response['_body'] === 'Already added') {
           console.log('Already added');
         } else {
           const data = JSON.parse(response['_body']);

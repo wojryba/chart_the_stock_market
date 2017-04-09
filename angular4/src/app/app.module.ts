@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { ChartModule } from 'angular2-highcharts';
+import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
+
 
 import { AppComponent } from './app.component';
 import { ChartComponent } from './components/chart/chart.component';
@@ -11,8 +13,9 @@ import { ChartComponent } from './components/chart/chart.component';
 import { ApiService } from './services/api.service';
 
 declare var require: any;
-
-const Highcharts = require('highcharts/highstock');
+export function highchartsFactory() {
+  return require('highcharts/highstock');
+}
 
 @NgModule({
   declarations: [
@@ -23,9 +26,13 @@ const Highcharts = require('highcharts/highstock');
     BrowserModule,
     FormsModule,
     HttpModule,
-    ChartModule.forRoot(Highcharts),
+		ChartModule
   ],
-  providers: [ApiService],
+  providers: [ApiService,
+		{
+       provide: HighchartsStatic,
+       useFactory: highchartsFactory
+     },],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

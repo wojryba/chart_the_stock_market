@@ -10,12 +10,12 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   localStorage = new LocalStorage('./scratch');
 }
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.post('/stock', (req, res) => {
   const url = `https://www.quandl.com/api/v3/datasets/WIKI/${req.body.symbol.symbol}.json?column_index=1&order=asc&start_date=2016-04-08&collapse=daily&api_key=${process.env.APIKEY}`;
@@ -52,20 +52,6 @@ app.post('/stock', (req, res) => {
         return res.send("Already added")
       }
     }
-  })
-})
-
-app.get('/', (req, res) => {
-  const FB = "FB"
-  const url = `https://www.quandl.com/api/v3/datasets/WIKI/${FB}.json?column_index=1&order=asc&start_date=2016-04-08&collapse=daily&api_key=${process.env.APIKEY}`;
-
-
-
-  request(url, (error, response, body) => {
-    if (error) {
-      return res.send(error);
-    }
-    return res.send(JSON.parse(body));
   })
 })
 
@@ -107,6 +93,6 @@ io.on('connection', (socket) => {
   })
 });
 
-http.listen(5000, () => {
-  console.log('started on port 5000');
+http.listen(port, () => {
+  console.log('started on port ', + port);
 });

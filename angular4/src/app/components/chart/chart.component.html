@@ -1,18 +1,22 @@
-<div class="chart">
-  <chart type="StockChart" [options]="options" (load)="saveInstance($event.context)"></chart>
-</div>
-
-<div *ngFor="let stock of stocks let i = index">
-  <h1>{{stock.symbol}}</h1>
-  <h3>{{stock.name}}</h3>
-  <p (click)="removeStock(stock.symbol, i)">X</p>
-</div>
-
-<form #form="ngForm" (ngSubmit)="onSubmit(form.value)">
-  <label>Syncs in realtime across clients</label>
-  <input placeholder="Stock Symbol" type="text" required name="symbol" ngModel/>
-  <div *ngIf="!hidden">
-    <p>You must enter valid stock symbol</p>
+<div class="container">
+  <div class="chart">
+    <chart type="StockChart" [options]="options" (load)="saveInstance($event.context)"></chart>
   </div>
-  <button type="submit" [disabled]="!form.form.valid">Add</button>
-</form>
+
+  <div class="flex">
+    <div class="item" *ngFor="let stock of stocks let i = index">
+      <h3>{{stock.symbol}}</h3>
+      <h5 (click)="removeStock(stock.symbol, i)">X</h5>
+      <p>{{stock.name}}</p>
+    </div>
+
+    <form class="item" #form="ngForm" (ngSubmit)="onSubmit(form.value)">
+      <label>Syncs in realtime across clients</label>
+      <input placeholder="Stock Symbol" type="text" required name="symbol" ngModel/>
+      <button type="submit" [disabled]="!form.form.valid">Add</button>
+      <div *ngIf="!hidden">
+        <p>You must enter valid stock symbol</p>
+      </div>
+    </form>
+  </div>
+</div>
