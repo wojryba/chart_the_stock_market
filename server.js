@@ -10,7 +10,7 @@ if (typeof localStorage === "undefined" || localStorage === null) {
   localStorage = new LocalStorage('./scratch');
 }
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors());

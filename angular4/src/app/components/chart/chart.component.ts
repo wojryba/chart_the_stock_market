@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy  } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 
+declare var require: any;
 
 @Component({
   selector: 'app-chart',
@@ -14,6 +15,7 @@ export class ChartComponent implements OnInit, OnDestroy  {
   hidden = true;
   stocks: any = [];
   connection: any;
+
 
   constructor(private api: ApiService) {
     this.options = {
