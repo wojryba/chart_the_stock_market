@@ -5,10 +5,6 @@ const request = require('request');
 const path = require('path');
 require('dotenv').config();
 
-if (typeof localStorage === "undefined" || localStorage === null) {
-  var LocalStorage = require('node-localstorage').LocalStorage;
-  localStorage = new LocalStorage('./scratch');
-}
 
 const port = process.env.PORT || 3000;
 

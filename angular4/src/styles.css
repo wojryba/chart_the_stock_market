@@ -17,7 +17,7 @@ body {
 }
 
 .container {
-  width: 65%;
+  width: 70%;
   min-width: 300px;
   margin: auto;
   background-color: #616161;
@@ -32,6 +32,7 @@ body {
   height: auto;
   flex-wrap: wrap;
   padding: 5px;
+  margin: auto;
 }
 
 .item {

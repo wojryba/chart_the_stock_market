@@ -17,6 +17,9 @@
       <div *ngIf="!hidden">
         <p>You must enter valid stock symbol</p>
       </div>
+      <div *ngIf="alreadyAdded">
+        <p>Stock already present in the chart!</p>
+      </div>
     </form>
   </div>
 </div>

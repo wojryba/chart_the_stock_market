@@ -7,7 +7,7 @@ import * as io from 'socket.io-client';
 
 @Injectable()
 export class ApiService {
-  private url = '';
+  private url = 'http://localhost:3000/';
   private socket;
 
 
@@ -18,7 +18,7 @@ export class ApiService {
     const headers = new Headers ({ 'Content-Type': 'application/json;charset=utf-8' });
     const options = new RequestOptions({ headers: headers});
 
-    return this.http.post('api/stock', encoded_data, options);
+    return this.http.post('http://localhost:3000/api/stock', encoded_data, options);
   }
 
   getStocks() {
@@ -43,7 +43,7 @@ export class ApiService {
   }
 
   getInitialStocks() {
-    return this.http.get('api/get');
+    return this.http.get('http://localhost:3000/api/get');
   }
 
   deleteStock(val) {
@@ -51,7 +51,7 @@ export class ApiService {
     const headers = new Headers ({'Content-Type': 'application/json;charset=utf-8'});
     const options = new RequestOptions ({headers: headers });
 
-    return this.http.post('api/remove', encoded_data, options);
+    return this.http.post('http://localhost:3000/api/remove', encoded_data, options);
   }
 
 

@@ -15,6 +15,7 @@ export class ChartComponent implements OnInit, OnDestroy  {
   hidden = true;
   stocks: any = [];
   connection: any;
+  alreadyAdded = false;
 
 
   constructor(private api: ApiService) {
@@ -83,21 +84,29 @@ export class ChartComponent implements OnInit, OnDestroy  {
     // get initial stocks from backend
     this.api.getInitialStocks().subscribe(
       response => {
-        const f = JSON.parse(response['_body']);
-        // map the recived data and insert into chart and view
-        f.data.map( val => {
+        if(response['_body'] == '') {
           const stockData = {
-            name: val.dataset['dataset_code'],
-            data: val.dataset.data,
+            name: '',
+            data: '',
           };
           this.chart.addSeries(stockData);
+        } else {
+          const f = JSON.parse(response['_body']);
+          // map the recived data and insert into chart and view
+          f.data.map( val => {
+            const stockData = {
+              name: val.dataset['dataset_code'],
+              data: val.dataset.data,
+            };
+            this.chart.addSeries(stockData);
 
-          const stock = {
-            symbol: val.dataset['dataset_code'],
-            name: val.dataset.name
-          };
-          this.stocks.push(stock);
-        });
+            const stock = {
+              symbol: val.dataset['dataset_code'],
+              name: val.dataset.name
+            };
+            this.stocks.push(stock);
+          });
+        }
       }
     );
 
@@ -123,7 +132,12 @@ export class ChartComponent implements OnInit, OnDestroy  {
           }
         }
       },
-      error => console.log(error),
+      error => {
+        if (error['_body'] === 'Already added') {
+          this.alreadyAdded = true;
+          setTimeout(() => this.alreadyAdded = false, 2000);
+        }
+      },
       () => console.log('complete')
     );
   }

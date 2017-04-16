@@ -346,6 +346,7 @@ var ChartComponent = (function () {
         this.api = api;
         this.hidden = true;
         this.stocks = [];
+        this.alreadyAdded = false;
         this.options = {
             title: { text: 'STOCKS' },
             series: []
@@ -399,20 +400,29 @@ var ChartComponent = (function () {
         this.chart = chartInstance;
         // get initial stocks from backend
         this.api.getInitialStocks().subscribe(function (response) {
-            var f = JSON.parse(response['_body']);
-            // map the recived data and insert into chart and view
-            f.data.map(function (val) {
+            if (response['_body'] == '') {
                 var stockData = {
-                    name: val.dataset['dataset_code'],
-                    data: val.dataset.data,
+                    name: '',
+                    data: '',
                 };
                 _this.chart.addSeries(stockData);
-                var stock = {
-                    symbol: val.dataset['dataset_code'],
-                    name: val.dataset.name
-                };
-                _this.stocks.push(stock);
-            });
+            }
+            else {
+                var f = JSON.parse(response['_body']);
+                // map the recived data and insert into chart and view
+                f.data.map(function (val) {
+                    var stockData = {
+                        name: val.dataset['dataset_code'],
+                        data: val.dataset.data,
+                    };
+                    _this.chart.addSeries(stockData);
+                    var stock = {
+                        symbol: val.dataset['dataset_code'],
+                        name: val.dataset.name
+                    };
+                    _this.stocks.push(stock);
+                });
+            }
         });
     };
     ChartComponent.prototype.onSubmit = function (value) {
@@ -434,7 +444,12 @@ var ChartComponent = (function () {
                     _this.api.sendStocks(data);
                 }
             }
-        }, function (error) { return console.log(error); }, function () { return console.log('complete'); });
+        }, function (error) {
+            if (error['_body'] === 'Already added') {
+                _this.alreadyAdded = true;
+                setTimeout(function () { return _this.alreadyAdded = false; }, 2000);
+            }
+        }, function () { return console.log('complete'); });
     };
     return ChartComponent;
 }());
@@ -495,7 +510,7 @@ exports = module.exports = __webpack_require__(31)();
 
 
 // module
-exports.push([module.i, "chart {\r\n  display: block;\r\n  width: 98%;\r\n}\r\n", ""]);
+exports.push([module.i, "chart {\r\n  display: block;\r\n  width: 100%;\r\n\r\n}\r\n", ""]);
 
 // exports
 
@@ -515,7 +530,7 @@ module.exports = "<app-chart></app-chart>\n"
 /***/ 192:
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n  <div class=\"chart\">\n    <chart type=\"StockChart\" [options]=\"options\" (load)=\"saveInstance($event.context)\"></chart>\n  </div>\n\n  <div class=\"flex\">\n    <div class=\"item\" *ngFor=\"let stock of stocks let i = index\">\n      <h3>{{stock.symbol}}</h3>\n      <h5 (click)=\"removeStock(stock.symbol, i)\">X</h5>\n      <p>{{stock.name}}</p>\n    </div>\n\n    <form class=\"item\" #form=\"ngForm\" (ngSubmit)=\"onSubmit(form.value)\">\n      <label>Syncs in realtime across clients</label>\n      <input placeholder=\"Stock Symbol\" type=\"text\" required name=\"symbol\" ngModel/>\n      <button type=\"submit\" [disabled]=\"!form.form.valid\">Add</button>\n      <div *ngIf=\"!hidden\">\n        <p>You must enter valid stock symbol</p>\n      </div>\n    </form>\n  </div>\n</div>\n"
+module.exports = "<div class=\"container\">\n  <div class=\"chart\">\n    <chart type=\"StockChart\" [options]=\"options\" (load)=\"saveInstance($event.context)\"></chart>\n  </div>\n\n  <div class=\"flex\">\n    <div class=\"item\" *ngFor=\"let stock of stocks let i = index\">\n      <h3>{{stock.symbol}}</h3>\n      <h5 (click)=\"removeStock(stock.symbol, i)\">X</h5>\n      <p>{{stock.name}}</p>\n    </div>\n\n    <form class=\"item\" #form=\"ngForm\" (ngSubmit)=\"onSubmit(form.value)\">\n      <label>Syncs in realtime across clients</label>\n      <input placeholder=\"Stock Symbol\" type=\"text\" required name=\"symbol\" ngModel/>\n      <button type=\"submit\" [disabled]=\"!form.form.valid\">Add</button>\n      <div *ngIf=\"!hidden\">\n        <p>You must enter valid stock symbol</p>\n      </div>\n      <div *ngIf=\"alreadyAdded\">\n        <p>Stock already present in the chart!</p>\n      </div>\n    </form>\n  </div>\n</div>\n"
 
 /***/ }),
 
