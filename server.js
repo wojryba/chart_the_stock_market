@@ -15,64 +15,14 @@ const port = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'dist')));
 
-app.post('/stock', (req, res) => {
-  const url = `https://www.quandl.com/api/v3/datasets/WIKI/${req.body.symbol.symbol}.json?column_index=1&order=asc&start_date=2016-04-08&collapse=daily&api_key=${process.env.APIKEY}`;
+//setting the routes
+const api = require('./api')
+app.use('/api', api);
 
-  request(url, (error, response, body) => {
-    let stockData = JSON.parse(body);
-    if (error) {
-      return res.send(error);
-    } else if (stockData['quandl_error']) {
-      return res.send(stockData);
-    }
+//redirect to angulr all the routes
+app.use(express.static(__dirname + '/dist'))
 
-    // change string date/time to JS timestamp
-    stockData.dataset.data.map( val => {
-      val[0] = new Date(val[0]).getTime();
-    })
-
-    let f = JSON.parse(localStorage.getItem('initialStocks'));
-    if (!f){
-      f = {
-        data: [stockData]
-      }
-    } else {
-
-      let d = f.data.filter(val => {
-        return val.dataset['dataset_code'] === stockData.dataset['dataset_code']
-      })
-      if (d.length == 0) {
-        f.data.push(stockData);
-        localStorage.setItem('initialStocks', JSON.stringify(f));
-        return res.send(stockData);
-      } else {
-        console.log(d)
-        return res.send("Already added")
-      }
-    }
-  })
-})
-
-app.get('/get', (req, res) => {
-  let f = JSON.parse(localStorage.getItem('initialStocks'));
-  res.send(f);
-})
-
-app.post('/remove', (req, res) => {
-  let id = req.body.val;
-  let f = JSON.parse(localStorage.getItem('initialStocks'));
-  console.log(f);
-  function remove(val) {
-    if(val.dataset['dataset_code'] != id){
-      return val
-    };
-  }
-  f.data = f.data.filter(remove);
-  localStorage.setItem('initialStocks', JSON.stringify(f));
-  res.send("done");
-})
 
 const http = require('http').Server(app);
 const io = require('socket.io')(http);

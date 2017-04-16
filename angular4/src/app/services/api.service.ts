@@ -18,7 +18,7 @@ export class ApiService {
     const headers = new Headers ({ 'Content-Type': 'application/json;charset=utf-8' });
     const options = new RequestOptions({ headers: headers});
 
-    return this.http.post('stock', encoded_data, options);
+    return this.http.post('api/stock', encoded_data, options);
   }
 
   getStocks() {
@@ -43,7 +43,7 @@ export class ApiService {
   }
 
   getInitialStocks() {
-    return this.http.get('get');
+    return this.http.get('api/get');
   }
 
   deleteStock(val) {
@@ -51,7 +51,7 @@ export class ApiService {
     const headers = new Headers ({'Content-Type': 'application/json;charset=utf-8'});
     const options = new RequestOptions ({headers: headers });
 
-    return this.http.post('remove', encoded_data, options);
+    return this.http.post('api/remove', encoded_data, options);
   }
 
 

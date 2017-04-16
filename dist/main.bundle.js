@@ -561,13 +561,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var ApiService = (function () {
     function ApiService(http) {
         this.http = http;
-        this.url = '/';
+        this.url = '';
     }
     ApiService.prototype.fetchStock = function (symbol) {
         var encoded_data = JSON.stringify({ symbol: symbol });
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]({ 'Content-Type': 'application/json;charset=utf-8' });
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* RequestOptions */]({ headers: headers });
-        return this.http.post('/stock', encoded_data, options);
+        return this.http.post('api/stock', encoded_data, options);
     };
     ApiService.prototype.getStocks = function () {
         var _this = this;
@@ -589,13 +589,13 @@ var ApiService = (function () {
         this.socket.emit('remove-stock', val, j);
     };
     ApiService.prototype.getInitialStocks = function () {
-        return this.http.get('/get');
+        return this.http.get('api/get');
     };
     ApiService.prototype.deleteStock = function (val) {
         var encoded_data = JSON.stringify({ val: val });
         var headers = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["b" /* Headers */]({ 'Content-Type': 'application/json;charset=utf-8' });
         var options = new __WEBPACK_IMPORTED_MODULE_1__angular_http__["c" /* RequestOptions */]({ headers: headers });
-        return this.http.post('/remove', encoded_data, options);
+        return this.http.post('api/remove', encoded_data, options);
     };
     return ApiService;
 }());
